@@ -13,6 +13,7 @@ const sequelize = new Sequelize(
   }
 );
 
+
 const app = express();
 app.use(express.json({ limit: '500mb' })); // to parse JSON bodies
 
@@ -86,12 +87,13 @@ app.get('/fish/:hex', (req, res) => {
     });
 });
 
-// Get Fish Data for specific hex and date
-app.get('/fish/:hex/:date', (req, res) => {
-    const date = req.params.date;
+// Get Fish Data uploaded after this date
+app.get('/fish/sync/:date', (req, res) => {
+    const date = new Date(req.params.date);
+    console.log(date);
   FishTotal.findAll({
     where: {
-      lastCaught: {
+      createdAt: {
         [Op.gt]: date
      }
     }
