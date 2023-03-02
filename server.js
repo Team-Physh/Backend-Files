@@ -4,9 +4,9 @@ const Sequelize = require("sequelize");
 const {Op} = require('sequelize');
 
 const sequelize = new Sequelize(
- 'physh',
- 'teamphysh',
- 'teamPhysh12!',
+ 'removed',
+ 'removed',
+ 'removed',
   {
     host: '127.0.0.1',
     dialect: 'mysql'
