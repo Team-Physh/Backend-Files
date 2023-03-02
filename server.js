@@ -4,9 +4,9 @@ const Sequelize = require("sequelize");
 const {Op} = require('sequelize');
 
 const sequelize = new Sequelize(
- 'apiTest',
- 'myuser',
- 'mypassword',
+ 'physh',
+ 'teamphysh',
+ 'teamPhysh12!',
   {
     host: '127.0.0.1',
     dialect: 'mysql'
@@ -14,7 +14,7 @@ const sequelize = new Sequelize(
 );
 const app = express();
 
-app.use(express.json()); // to parse JSON bodies
+app.use(express.json({ limit: '500mb' })); // to parse JSON bodies
 
 // model our database tables
 const FishTotal = sequelize.define('fishtotal', {
@@ -28,19 +28,19 @@ const FishTotal = sequelize.define('fishtotal', {
   },
   lastCaught: {
     type: Sequelize.DATE,
-    allowNull: false
+    allowNull: true
   },
   species: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
   },
   length: {
     type: Sequelize.DOUBLE,
-    allowNull: false
+    allowNull: true
   },
   riverMile: {
     type: Sequelize.DOUBLE,
-    allowNull: false
+    allowNull: true
   }
 }, {tableName: 'fishtotal', timestamps: false});
 
@@ -86,13 +86,14 @@ app.get('/fish/:hex/:date', (req, res) => {
   FishTotal.findAll({
     where: {
       lastCaught: {
-        [Op.lt]: date
+        [Op.gt]: date
      },
      hex: req.params.hex
     }
   })
     .then(fish => {
       res.json(fish);
+
     })
     .catch(err => {
       res.status(500).send('Error retrieving fish data: ' + err);
@@ -100,21 +101,26 @@ app.get('/fish/:hex/:date', (req, res) => {
 });
 
 // Push data
-app.post('/fish', (req, res) => {
-  FishTotal.create(req.body)
-    .then(fish => {
-      res.json(fish);
-    })
-    .catch(err => {
-      res.status(500).send('Error inserting fish data: ' + err);
-    });
-});
-
-
-
-app.get('/test', (req, res) => {
-  console.log("Hello guys, this is an example api call");
-  res.send("Hello guys, this is an example api call");
+app.post('/fish/data', async (req, res) => {
+  const fishData = req.body;
+  console.log(fishData);
+  try {
+    for (let i = 0; i < fishData.length; i++) {
+      const { pit, hex, lastCaught, species, length, riverMile } = fishData[i];
+      await FishTotal.create({
+        pit,
+        hex,
+        lastCaught,
+        species,
+        length,
+        riverMile
+      });
+    }
+    res.status(200).send('Data successfully inserted into database');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error inserting data into database');
+  }
 });
 
 app.listen(3000, () => console.log('Server started on port 3000'));
