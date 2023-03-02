@@ -4,45 +4,51 @@ const Sequelize = require("sequelize");
 const {Op} = require('sequelize');
 
 const sequelize = new Sequelize(
- 'removed',
- 'removed',
- 'removed',
+ 'redacted',
+ 'redacted',
+ 'redacted',
   {
     host: '127.0.0.1',
     dialect: 'mysql'
   }
 );
-const app = express();
 
+const app = express();
 app.use(express.json({ limit: '500mb' })); // to parse JSON bodies
 
-// model our database tables
+// model the fish data table
 const FishTotal = sequelize.define('fishtotal', {
+  catch_id: {
+     type: Sequelize.INTEGER,
+     autoIncrement: true,
+     allowNull: false,
+     primaryKey: true
+  },
   pit: {
-    type: Sequelize.STRING,
-    allowNull: false
+     type: Sequelize.STRING,
+     allowNull: false
   },
   hex: {
-    type: Sequelize.BIGINT,
-    allowNull: false
+     type: Sequelize.BIGINT,
+     allowNull: false
   },
   lastCaught: {
-    type: Sequelize.DATE,
-    allowNull: true
+     type: Sequelize.DATE,
+     allowNull: true
   },
   species: {
-    type: Sequelize.STRING,
-    allowNull: true
+     type: Sequelize.STRING,
+     allowNull: true
   },
   length: {
-    type: Sequelize.DOUBLE,
-    allowNull: true
+     type: Sequelize.DOUBLE,
+     allowNull: true
   },
   riverMile: {
-    type: Sequelize.DOUBLE,
-    allowNull: true
+     type: Sequelize.DOUBLE,
+     allowNull: true
   }
-}, {tableName: 'fishtotal', timestamps: false});
+}, {tableName: 'fishtotal', timestamps: true, updatedAt: false});
 
 // Might end up using but for now not needed
 FishTotal.removeAttribute('id');
@@ -87,8 +93,7 @@ app.get('/fish/:hex/:date', (req, res) => {
     where: {
       lastCaught: {
         [Op.gt]: date
-     },
-     hex: req.params.hex
+     }
     }
   })
     .then(fish => {
