@@ -1,3 +1,6 @@
+# Change physh to what you named your schema
+USE physh;
+
 # Table For Fish Data 
 CREATE TABLE `fishtotal` (
   `catch_id` int NOT NULL AUTO_INCREMENT,
